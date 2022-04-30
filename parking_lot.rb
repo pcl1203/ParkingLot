@@ -8,13 +8,14 @@ require './parked_cars'
 class ParkingLot
   def initialize
     @parked_cars = ParkedCars.new
+    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
   end
 
   # Creating Parking Lots
   def create(lots = 1)
-    @open_slot = Array.new(lots, true)
     lots_to_create = Integer(lots)
-    puts "Created #{lots_to_create} lot/s"
+    @open_slot = Array.new(lots_to_create, true)
+    puts "Created #{lots_to_create} parking slot"
     lots_to_create
   rescue StandardError
     puts "Invalid lot number used: #{lots}"
@@ -44,15 +45,19 @@ class ParkingLot
 
   # Car Leaving based on slot number
   def leave_on_slot(slot)
-    if @open_slot.count <= slot || @open_slot[slot - 1] == true
+    slot_num = Integer(slot)
+    if @open_slot.count < slot_num
       puts 'Invalid slot'
       return 0
+    elsif @open_slot[slot_num - 1] == true
+      puts 'Already a free slot'
+      return 0
     end
-    @parked_cars.delete_car_on_slot(slot)
-    @open_slot[slot - 1] = true
+    @parked_cars.delete_car_on_slot(slot_num)
+    @open_slot[slot_num - 1] = true
     slot
   rescue StandardError
-    puts 'No car is leaving'
+    puts "No car is leaving on slot #{slot_num}"
     0
   end
 
@@ -69,30 +74,33 @@ class ParkingLot
 
   # Get the details of parked cars
   def status
-    puts "#{color} vehicle with platenumber #{platenumber} on slot #{slot} has been left"
+    @parked_cars.show_all_cars
   rescue StandardError
     puts 'No cars parked'
   end
 
   # Get the details of parked cars based on its color
   def color_based_status(color)
-    platenumber = 'ABC-123'
-    parked_on_slot = 0
-    puts "#{color} vehicle with platenumber #{platenumber} on slot #{slot} has been left"
-    [platenumber, parked_on_slot]
+    @parked_cars.check_cars_with_color(color)
   rescue StandardError
     puts "No #{color} cars parked"
-    [platenumber, parked_on_slot]
+    0
   end
 
   # Get the details of parked cars based on its plate number
   def platenumber_based_status(platenumber)
-    color = 'white'
-    parked_on_slot = 0
-    puts "#{color} vehicle with platenumber #{platenumber} on slot #{slot} has been left"
-    [color, parked_on_slot]
+    @parked_cars.check_car_with_plate_number(platenumber)
   rescue StandardError
     puts "No car with plate number #{platenumber} parked"
-    [color, parked_on_slot]
+    0
   end
+
+  # Get plate numbers of parked cars based on its color
+  def plate_num_with_color(color)
+    @parked_cars.check_platenum_cars_with_color(color)
+  rescue StandardError
+    puts "No #{color} cars parked"
+    0
+  end
+
 end
