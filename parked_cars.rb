@@ -35,51 +35,82 @@ class ParkedCars
     @parked_cars[:Cars].count
   end
 
-  def delete_car(plate_num)
-    if File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?     
+  def delete_car_with_plate_number(plate_num)
+    ret = 0
+    if File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
       @parked_cars[:Cars].each do |car| # Search for car with target plate number and delete
         next if car[:plate_number] != plate_num
 
         @parked_cars[:Cars].delete(car)
         puts "Vehicle with plate number '#{plate_num}' has left"
+        ret = car[:slot]
         break
       end
       save # save new cars
     end
-    @parked_cars[:Cars].count
+    ret
   end
 
-  def check_car_with_plate_number(plate_num)
+  def delete_car_on_slot(slot)
+    if File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
+      @parked_cars[:Cars].each do |car| # Search for car with target plate number and delete
+        next if car[:slot] != slot
+
+        @parked_cars[:Cars].delete(car)
+        puts "Vehicle on slot '#{slot}' has left"
+        return slot
+      end
+      save # save new cars
+    end
+    slot
+  end
+
+  def find_car_with_plate_number(plate_num)
+    similar_car = []
     return unless File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
 
     # Search for car with target plate number
     @parked_cars[:Cars].each do |car|
       next if car[:plate_number] != plate_num
 
-      puts "Vehicle(#{car[:color]}) with plate number '#{plate_num}' is parked on slot #{car[:slot]}"
-      break # no need to iterate further if found
+      similar_car.push([car[:plate_number], car[:slot], car[:color]])
     end
+    similar_car
   end
 
-  def check_car_with_color(color)
+  def find_cars_with_color(color)
+    similar_car = []
     return unless File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
 
-    found = false
-    similar_color_car = []
-    # Search for car with target color
+    # Search for car with target plate number
     @parked_cars[:Cars].each do |car|
       next if car[:color] != color.upcase
 
-      found = true
-      similar_color_car.push([car[:plate_number], car[:slot]])
+      similar_car.push([car[:plate_number], car[:slot], car[:color]])
     end
+    similar_car
+  end
+
+  def check_car_with_plate_number(plate_num)
+    return unless File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
+
+    find_car_with_plate_number(plate_num).each do |car|
+      puts "Vehicle(#{car[2]}) with plate number '#{car[0]}' is parked on slot #{car[1]}"
+    end
+
+    plate_num
+  end
+
+  def check_cars_with_color(color)
+    return unless File.exist?(CARS_FILENAME) && !@parked_cars.nil? && !@parked_cars[:Cars].nil?
+
     # Check if specified color exists
-    if found == false
+    similar_color_car = find_cars_with_color(color)
+    if similar_color_car.nil? || similar_color_car.count.zero?
       p "No vehicle parked with color #{color}"
       return 0
     end
     # Display results
-    puts similar_color_car[0][0]
     p "Vehicle/s with color #{color}"
     p 'Slot No. | Plate Number '
     similar_color_car.each do |car|

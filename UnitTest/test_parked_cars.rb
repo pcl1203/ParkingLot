@@ -9,6 +9,11 @@ class TestParkedCars < Test::Unit::TestCase
   def setup
     @parked_cars = ParkedCars.new
   end
+
+  def teardown
+    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
+  end
+
   test 'open' do
     assert_equal(0, @parked_cars.open)
   end
@@ -17,38 +22,64 @@ class TestParkedCars < Test::Unit::TestCase
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
-    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
   end
 
-  test 'delete' do
-    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+  test 'delete_car_with_plate_number' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 1))
     assert_not_equal(0, @parked_cars.add_car('d6d', 'white', 2))
-    assert_not_equal(0, @parked_cars.delete_car('d6d'))
-    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
+    assert_equal(2, @parked_cars.delete_car_with_plate_number('d6d'))
+    assert_equal(1, @parked_cars.delete_car_with_plate_number('dd'))
+  end
+
+  test 'delete_car_with_slot' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 1))
+    assert_not_equal(0, @parked_cars.add_car('d6d', 'white', 2))
+    assert_equal(2, @parked_cars.delete_car_on_slot(2))
+    assert_equal(1, @parked_cars.delete_car_on_slot(1))
   end
 
   test 'check_car_with_plate_number' do
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
-    assert(0, @parked_cars.check_car_with_plate_number('dd'))
-
-    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
+    assert_equal('dd', @parked_cars.check_car_with_plate_number('dd'))
   end
 
-  test 'check_car_with_color' do
+  test 'check_car_with_plate_number invalid' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+    assert_equal('ddwer', @parked_cars.check_car_with_plate_number('ddwer'))
+  end
+
+  test 'find_car_with_plate_number' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+    assert_not_equal(nil, @parked_cars.find_car_with_plate_number('dd'))
+  end
+
+  test 'find_car_with_plate_number invalid' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+    assert_equal([], @parked_cars.find_car_with_plate_number('123123'))
+  end
+
+  test 'find_cars_with_color' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+    assert_not_equal(nil, @parked_cars.find_cars_with_color('white'))
+  end
+
+  test 'find_cars_with_color invalid' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
+    assert_equal([], @parked_cars.find_cars_with_color('black'))
+  end
+
+  test 'check_cars_with_color' do
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 1))
     assert_not_equal(0, @parked_cars.add_car('d3d', 'white', 2))
     assert_not_equal(0, @parked_cars.add_car('d4d', 'white', 3))
-    assert_not_equal(0, @parked_cars.check_car_with_color('white'))
-
-    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
+    assert_not_equal(0, @parked_cars.add_car('d4sd', 'red', 4))
+    assert_not_equal(0, @parked_cars.check_cars_with_color('white'))
   end
 
-  test 'check_car_with_color invalid color' do
+  test 'check_cars_with_color invalid color' do
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 1))
     assert_not_equal(0, @parked_cars.add_car('d3d', 'white', 2))
     assert_not_equal(0, @parked_cars.add_car('d4d', 'white', 3))
-    assert_equal(0, @parked_cars.check_car_with_color('black'))
-
-    File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
+    assert_equal(0, @parked_cars.check_cars_with_color('black'))
   end
 end
