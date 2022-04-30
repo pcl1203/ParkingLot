@@ -23,7 +23,7 @@ class CommandCatcher
     words = option.encode('UTF-8', :invalid => :replace).split(' ')
     return if words.count.zero?
 
-    command = words[0]
+    command = words[0].downcase
 
     if command == 'help' && File.exist?(HELP_FILENAME)
       hlp = File.read(HELP_FILENAME)
@@ -32,7 +32,7 @@ class CommandCatcher
     end
 
     if !@created 
-      case command.downcase
+      case command
       when 'lot', 'create_parking_lot'
         if @created
           puts 'Already initiated'
