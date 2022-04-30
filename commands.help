@@ -1,0 +1,10 @@
+
+List of available commands
+
+create_parking_lot                  Creating of parking lots (need 1 numerical argument)
+park                                Adds a car in the parking lot (needs 2 arguments: platenumber and color)
+leave                               Removes a car in the parking lot using its slot number(needs 1 arguments: slot number)
+status                              Displays all cars parked
+cars_with_colour                    Displays all cars for a certain colour (need 1 argument for target color)
+car_with_platenumber                Displays car details using its plate number (need 1 argument for target plate number)
+plate_numbers_for_cars_with_colour  Displays plate numbers of all cars for a certain colour (need 1 argument for target color)

@@ -25,8 +25,14 @@ class CommandCatcher
 
     command = words[0]
 
+    if command == 'help' && File.exist?(HELP_FILENAME)
+      hlp = File.read(HELP_FILENAME)
+      puts hlp
+      return
+    end
+
     if !@created 
-      case command
+      case command.downcase
       when 'lot', 'create_parking_lot'
         if @created
           puts 'Already initiated'
