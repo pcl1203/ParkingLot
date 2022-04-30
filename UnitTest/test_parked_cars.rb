@@ -3,14 +3,10 @@
 require 'test/unit'
 require_relative '../parked_cars'
 
-CARS_FILENAME = 'parkedcars.yml'
 # TestParkedCars
 class TestParkedCars < Test::Unit::TestCase
   def setup
     @parked_cars = ParkedCars.new
-  end
-
-  def teardown
     File.delete(CARS_FILENAME) if File.exist?(CARS_FILENAME)
   end
 
@@ -40,12 +36,12 @@ class TestParkedCars < Test::Unit::TestCase
 
   test 'check_car_with_plate_number' do
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
-    assert_equal('dd', @parked_cars.check_car_with_plate_number('dd'))
+    assert_equal(1, @parked_cars.check_car_with_plate_number('dd'))
   end
 
   test 'check_car_with_plate_number invalid' do
     assert_not_equal(0, @parked_cars.add_car('dd', 'white', 3))
-    assert_equal('ddwer', @parked_cars.check_car_with_plate_number('ddwer'))
+    assert_equal(0, @parked_cars.check_car_with_plate_number('ddwer'))
   end
 
   test 'find_car_with_plate_number' do
@@ -81,5 +77,16 @@ class TestParkedCars < Test::Unit::TestCase
     assert_not_equal(0, @parked_cars.add_car('d3d', 'white', 2))
     assert_not_equal(0, @parked_cars.add_car('d4d', 'white', 3))
     assert_equal(0, @parked_cars.check_cars_with_color('black'))
+  end
+
+  test 'show_all_cars' do
+    assert_not_equal(0, @parked_cars.add_car('dd', 'white', 1))
+    assert_not_equal(0, @parked_cars.add_car('d3d', 'white', 2))
+    assert_not_equal(0, @parked_cars.add_car('d4d', 'white', 3))
+    assert_equal(3, @parked_cars.show_all_cars)
+  end
+
+  test 'show_all_cars invalid' do
+    assert_equal(0, @parked_cars.show_all_cars)
   end
 end
