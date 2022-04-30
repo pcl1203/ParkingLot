@@ -49,15 +49,17 @@ class TestParkingLot < Test::Unit::TestCase
   end
 
   test 'color_based_status' do
-    ret = @parking_lot.color_based_status('black')
-    assert_equal('ABC-123', ret[0])
-    assert_equal(0, ret[1])
+    assert_equal(3, @parking_lot.create(3))
+    assert_equal(1, @parking_lot.park('abc-123', 'black'))
+    assert_equal(1, @parking_lot.color_based_status('black'))
+    assert_equal(0, @parking_lot.color_based_status('red'))
   end
 
   test 'platenumber_based_status' do
-    ret = @parking_lot.platenumber_based_status('ABC-123')
-    assert_equal('white', ret[0])
-    assert_equal(0, ret[1])
+    assert_equal(3, @parking_lot.create(3))
+    assert_equal(1, @parking_lot.park('abc-123', 'black'))
+    assert_equal(1, @parking_lot.platenumber_based_status('abc-123'))
+    assert_equal(0, @parking_lot.platenumber_based_status('ab2c-123'))
   end
 
   test 'determine_open_slot' do
