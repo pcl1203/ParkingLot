@@ -66,7 +66,7 @@ class CommandCatcher
       end
     when 'stat', 'status'
       @parking_lot.status
-    when 'cc', 'cars_with_colour'
+    when 'cc', 'cars_with_colour', 'slot_numbers_for_cars_with_colour'
       if words.count >= 2
         @parking_lot.color_based_status(words[1])
       else
